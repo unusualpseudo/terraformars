@@ -1,6 +1,6 @@
 ---
 creation_rules:
-  - path_regex: repositories/.*\.sops\.ya?ml
+  - path_regex: ^(.*\/)([^\/]+\.sops\.yaml)$
     unencrypted_regex: "^(kind)$"
     key_groups:
       - age:

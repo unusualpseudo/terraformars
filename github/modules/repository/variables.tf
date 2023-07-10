@@ -80,3 +80,5 @@ variable "webhook_events" {
   type    = list(string)
   default = ["*"]
 }
+
+variable "secrets" {}

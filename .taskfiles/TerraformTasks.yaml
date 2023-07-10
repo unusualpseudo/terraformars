@@ -2,20 +2,66 @@
 version: "3"
 
 tasks:
+
+  gh-fmt:
+    desc: Format github tf files
+    dir: github
+    cmds:
+      - terraform fmt --recursive
+
+  gh-nuke:
+    desc: Destroy github tf files
+    dir: github
+    cmds:
+      - terraform destroy
+
+
   gh-init:
-    desc: Init Github repositories provision
-    dir: repositories
+    desc: Init Github provision
+    dir: github
     cmds:
       - terraform init -input=false
 
   gh-plan:
-    desc: Github repositories provision execution plan
-    dir: repositories
+    desc: Github provision execution plan
+    dir: github
     cmds:
       - terraform plan -input=false
 
   gh-apply:
-    desc: Provision Github repositories
-    dir: repositories
+    desc: Provision Github provision
+    dir: github
+    cmds:
+      - terraform apply -input=false -auto-approve
+
+
+  aws-fmt:
+    desc: Format aws tf files
+    dir: aws
+    cmds:
+      - terraform fmt --recursive
+
+  aws-nuke:
+    desc: Destroy aws infra
+    dir: aws
+    cmds:
+      - terraform destroy
+
+
+  aws-init:
+    desc: Init aws provision
+    dir: aws
+    cmds:
+      - terraform init -input=false
+
+  aws-plan:
+    desc: Show aws provision execution plan
+    dir: aws
+    cmds:
+      - terraform plan -input=false
+
+  aws-apply:
+    desc: Provision aws
+    dir: aws
     cmds:
       - terraform apply -input=false -auto-approve
