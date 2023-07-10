@@ -1,0 +1,15 @@
+---
+version: "3"
+
+dotenv: [".envrc"]
+
+includes:
+  sops: ./.taskfiles/SopsTasks.yaml
+  tf: ./.taskfiles/TerraformTasks.yaml
+  pre-commit: ./.taskfiles/PrecommitTasks.yaml
+
+tasks:
+  default:
+    silent: true
+    cmds:
+      - task -l

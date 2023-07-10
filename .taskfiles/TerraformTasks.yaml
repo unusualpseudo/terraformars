@@ -1,0 +1,21 @@
+---
+version: "3"
+
+tasks:
+  gh-init:
+    desc: Init Github repositories provision
+    dir: repositories
+    cmds:
+      - terraform init -input=false
+
+  gh-plan:
+    desc: Github repositories provision execution plan
+    dir: repositories
+    cmds:
+      - terraform plan -input=false
+
+  gh-apply:
+    desc: Provision Github repositories
+    dir: repositories
+    cmds:
+      - terraform apply -input=false -auto-approve
