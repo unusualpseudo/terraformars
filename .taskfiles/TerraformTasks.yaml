@@ -17,13 +17,13 @@ tasks:
 
 
   gh-init:
-    desc: Init Github provision
+    desc: Init github provision
     dir: github
     cmds:
       - terraform init -input=false
 
   gh-plan:
-    desc: Github provision execution plan
+    desc: Show github provision execution plan
     dir: github
     cmds:
       - terraform plan -input=false
@@ -63,5 +63,36 @@ tasks:
   aws-apply:
     desc: Provision aws
     dir: aws
+    cmds:
+      - terraform apply -input=false -auto-approve
+
+
+  cf-fmt:
+    desc: Format cloudflare tf files
+    dir: cloudflare
+    cmds:
+      - terraform fmt --recursive
+
+  cf-nuke:
+    desc: Destroy cloudflare tf files
+    dir: cloudflare
+    cmds:
+      - terraform destroy
+
+  cf-init:
+    desc: Init cloudflare provision
+    dir: cloudflare
+    cmds:
+      - terraform init -input=false
+
+  cf-plan:
+    desc: Show cloudflare execution plan
+    dir: cloudflare
+    cmds:
+      - terraform plan -input=false
+
+  cf-apply:
+    desc: Provision cloudflare provision
+    dir: cloudflare
     cmds:
       - terraform apply -input=false -auto-approve

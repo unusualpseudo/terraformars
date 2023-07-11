@@ -18,6 +18,7 @@ resource "aws_s3_bucket" "terraform_state" {
   lifecycle {
     prevent_destroy = false
   }
+  depends_on = [module.dynamodb]
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
