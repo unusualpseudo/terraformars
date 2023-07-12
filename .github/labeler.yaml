@@ -1,0 +1,9 @@
+---
+aws:
+  - "aws/*"
+cloudflare:
+  - "cloudflare/*"
+github:
+  - "github/*"
+github-actions:
+  - ".github/**/*"
