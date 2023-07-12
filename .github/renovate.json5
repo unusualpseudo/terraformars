@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":disableRateLimiting",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":enablePreCommit",
+    ":automergeDigest",
+    ":automergeBranchPush",
+    "helpers:pinGitHubActionDigests",
+    "github>unusualpseudo/terraformars//.github/renovate/autoMerge.json5",
+    "github>unusualpseudo/terraformars//.github/renovate/labels.json5",
+    "github>unusualpseudo/terraformars//.github/renovate/semanticCommits.json5",
+    "github>unusualpseudo/terraformars//.github/renovate/commitMessage.json5"
+  ],
+  "platform": "github",
+  "commitBodyTable": true,
+  "recreateClosed": true,
+  "onboarding": false,
+  "username": "unusualpseudo",
+  "gitAuthor": "unusualpseudo <unusualpseudo@users.noreply.github.com>",
+  "repositories": [
+    "unusualpseudo/terraformars"
+  ],
+  "timezone": "Europe/Paris",
+  "dependencyDashboard": true,
+  "dependencyDashboardTitle": "Renovate Dashboard 🤖",
+  "suppressNotifications": [
+    "prIgnoreNotification"
+  ],
+  "rebaseWhen": "conflicted",
+  "schedule": [
+    "every saturday"
+  ],
+  "automergeStrategy": "rebase",
+  "pre-commit": {
+    "enabled": true
+  }
+}

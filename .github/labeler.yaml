@@ -5,5 +5,5 @@ cloudflare:
   - "cloudflare/*"
 github:
   - "github/*"
-github-actions:
+ci:
   - ".github/**/*"
