@@ -30,6 +30,8 @@ repos:
         args: [--maxkb=2048]
       - id: check-merge-conflict
       - id: check-executables-have-shebangs
+      - id: detect-aws-credentials
+        args: ['--allow-missing-credentials']
 
   - repo: https://github.com/k8s-at-home/sops-pre-commit
     rev: v2.1.1
