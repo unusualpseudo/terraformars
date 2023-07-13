@@ -1,0 +1,111 @@
+name: Terraform CI
+
+on:
+  workflow_dispatch:
+
+
+jobs:
+  directories:
+    name: Directory Changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: unusualpseudo/terraform-monorepo-action@master
+        id: directories
+      - run: echo ${{ steps.directories.outputs.modules }}
+    outputs:
+      dirs: ${{ steps.directories.outputs.modules }}
+  terraform:
+    env:
+      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
+    name: Terraform CI
+    runs-on: ubuntu-latest
+    needs: directories
+    if: ${{ needs.directories.outputs.dirs != '' && toJson(fromJson(needs.directories.outputs.dirs)) != '[]' }}
+    strategy:
+      matrix:
+        directories: ${{ fromJson(needs.directories.outputs.dirs) }}
+    defaults:
+      run:
+        working-directory: ${{ matrix.directories }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials Action For GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sops Binary Installer
+        id: sops
+        uses: mdgreenwald/mozilla-sops-action@v1.4.1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.1.9
+          terraform_wrapper: true
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color > plan.log
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        id: plan
+        run: |
+          terraform plan -input=false -no-color
+        continue-on-error: true
+
+      - name: Generate Token
+        id: generate-token
+        if: github.event_name == 'pull_request'
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Update Pull Request
+        id: comment
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: "${{ steps.generate-token.outputs.token }}"
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
