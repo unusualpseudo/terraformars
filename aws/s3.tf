@@ -1,4 +1,11 @@
 
+
+data "sops_file" "aws_secrets" {
+  source_file = "aws_secrets.sops.yaml"
+  input_type  = "yaml"
+}
+
+
 module "dynamodb" {
   source     = "./modules/db/"
   table_name = var.table_name
@@ -6,7 +13,7 @@ module "dynamodb" {
 
 module "s3_budget" {
   source = "./modules/budget/"
-  email  = var.email
+  email  = data.sops_file.aws_secrets.data["email"]
 }
 
 

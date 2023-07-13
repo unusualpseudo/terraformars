@@ -10,5 +10,3 @@ variable "table_name" {
   type        = string
   default     = "TerraformarsStateLock"
 }
-
-variable "email" {}
