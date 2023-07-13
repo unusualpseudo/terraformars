@@ -9,7 +9,12 @@ terraform {
       version = "0.7.2"
     }
   }
-  backend "local" {}
+  backend "s3" {
+    bucket  = "terraformars-state"
+    region  = "eu-west-3"
+    key     = "github/terraform.tfstate"
+    encrypt = true
+  }
 }
 
 provider "github" {
