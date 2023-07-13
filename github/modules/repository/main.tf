@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-
 resource "github_repository" "repository" {
   name               = var.repo_name
   description        = var.description
@@ -50,32 +49,24 @@ resource "github_branch_protection" "main" {
     require_last_push_approval = true
   }
 
-
   required_status_checks {
     strict = true
   }
 }
 
 
+resource "github_actions_secret" "op_svc_token" {
 
-resource "github_actions_secret" "app_id_secret" {
   repository      = github_repository.repository.name
-  secret_name     = "BOT_APP_ID"
-  plaintext_value = var.secrets["app_id"]
+  secret_name     = "OP_SERVICE_ACCOUNT_TOKEN"
+  plaintext_value = var.op_svc_token
 }
-
-resource "github_actions_secret" "app_id_private_key" {
-  repository      = github_repository.repository.name
-  secret_name     = "BOT_APP_PRIVATE_KEY"
-  plaintext_value = var.secrets.app_private_key
-}
-
 
 resource "github_repository_webhook" "discord" {
   repository = github_repository.repository.name
   active     = true
   configuration {
-    url          = var.secrets.discord_webhook_url
+    url          = var.discord_webhook_url
     content_type = "json"
   }
   events = ["*"]

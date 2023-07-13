@@ -26,13 +26,13 @@ tasks:
     desc: Show github provision execution plan
     dir: github
     cmds:
-      - terraform plan -input=false
+      - terraform plan -input=false -var-file tfvars.json
 
   gh-apply:
     desc: Provision Github provision
     dir: github
     cmds:
-      - terraform apply -input=false -auto-approve
+      - terraform apply -input=false -auto-approve -var-file tfvars.json
 
 
   aws-fmt:

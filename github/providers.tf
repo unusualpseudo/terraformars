@@ -18,6 +18,6 @@ terraform {
 }
 
 provider "github" {
-  token = data.sops_file.github.data["token"]
+  token = data.sops_file.github_secrets.data["token"]
   owner = "unusualpseudo"
 }
