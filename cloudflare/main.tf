@@ -83,3 +83,16 @@ resource "cloudflare_tunnel" "homelab" {
   account_id = data.sops_file.cloudflare_secrets.data["cloudflare_account_id"]
   secret     = random_id.tunnel-secret.b64_std
 }
+
+
+
+data "sops_file" "cloudflare_secrets" {
+  source_file = "cloudflare_secrets.sops.yaml"
+  input_type  = "yaml"
+}
+
+data "cloudflare_zones" "domain" {
+  filter {
+    name = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  }
+}
