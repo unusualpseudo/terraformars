@@ -1,5 +1,5 @@
 
-data "sops_file" "github_secrets" {
+data "sops_file" "github_secret" {
   source_file = "github_secrets.sops.yaml"
   input_type  = "yaml"
 }
