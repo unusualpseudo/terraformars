@@ -68,6 +68,12 @@ resource "aws_iam_role_policy_attachment" "read_role_policy_attachment" {
   policy_arn = aws_iam_policy.read_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "read_role_dynamodb_access_attachment" {
+  role       = aws_iam_role.github_actions_read_role.name
+  policy_arn = aws_iam_policy.read_policy.arn
+}
+
+
 resource "aws_iam_role" "github_actions_write_role" {
   name = "github-actions-write-role"
 
@@ -123,4 +129,29 @@ resource "aws_iam_policy" "write_policy" {
 resource "aws_iam_role_policy_attachment" "write_role_policy_attachment" {
   role       = aws_iam_role.github_actions_write_role.name
   policy_arn = aws_iam_policy.write_policy.arn
+}
+
+
+resource "aws_iam_role_policy_attachment" "write_role_dynamodb_access_attachment" {
+  role       = aws_iam_role.github_actions_write_role.name
+  policy_arn = aws_iam_policy.read_policy.arn
+}
+
+resource "aws_iam_policy" "dynamodb_access" {
+  name        = "DynamoDBAccessPolicy"
+  description = "IAM policy for DynamoDB access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem"
+        ]
+        Resource = aws_dynamodb_table.terraform_locks.arn
+      }
+    ]
+  })
 }

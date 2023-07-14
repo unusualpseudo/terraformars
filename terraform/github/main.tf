@@ -1,6 +1,6 @@
 
-data "sops_file" "github_secrets" {
-  source_file = "github_secrets.sops.yaml"
+data "sops_file" "secrets" {
+  source_file = "secrets.sops.yaml"
   input_type  = "yaml"
 }
 
@@ -11,5 +11,5 @@ module "github_repository" {
   repo_name   = each.key
   description = each.value.description
   topics      = each.value.topics
-  secrets     = data.sops_file.github_secrets.data
+  secrets     = data.sops_file.secrets.data
 }

@@ -55,27 +55,6 @@ resource "github_branch_protection" "main" {
 }
 
 
-resource "github_actions_secret" "app_private_key" {
-
-  repository      = github_repository.repository.name
-  secret_name     = "BOT_APP_PRIVATE_KEY"
-  plaintext_value = var.secrets["app_private_key"]
-}
-
-resource "github_actions_secret" "app_id" {
-
-  repository      = github_repository.repository.name
-  secret_name     = "BOT_APP_ID"
-  plaintext_value = var.secrets["app_id"]
-}
-
-
-resource "github_actions_secret" "sops_age_key" {
-  repository      = github_repository.repository.name
-  secret_name     = "SOPS_AGE_KEY"
-  plaintext_value = var.secrets["sops_age_key"]
-}
-
 resource "github_repository_webhook" "discord" {
   repository = github_repository.repository.name
   active     = true
@@ -84,4 +63,30 @@ resource "github_repository_webhook" "discord" {
     content_type = "json"
   }
   events = var.webhook_events
+}
+
+
+resource "github_actions_secret" "aws_account_id" {
+  repository      = github_repository.repository.name
+  secret_name     = "AWS_ACCOUNT_ID"
+  plaintext_value = var.secrets["aws_account_id"]
+}
+
+resource "github_actions_secret" "app_id" {
+  repository      = github_repository.repository.name
+  secret_name     = "BOT_APP_ID"
+  plaintext_value = var.secrets["app_id"]
+}
+
+resource "github_actions_secret" "app_private_key" {
+  repository      = github_repository.repository.name
+  secret_name     = "BOT_APP_PRIVATE_KEY"
+  plaintext_value = var.secrets["app_private_key"]
+}
+
+
+resource "github_actions_secret" "sops_age_key" {
+  repository      = github_repository.repository.name
+  secret_name     = "SOPS_AGE_KEY"
+  plaintext_value = var.secrets["sops_age_key"]
 }

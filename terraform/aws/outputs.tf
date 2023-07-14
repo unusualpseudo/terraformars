@@ -12,6 +12,6 @@ output "s3_bucket_arn" {
 }
 
 output "terraform_locks" {
-  value       = aws_dynamodb_table.terraform_locks.id
+  value       = aws_dynamodb_table.terraform_locks.arn
   description = "The id of the DynamoDB table"
 }
