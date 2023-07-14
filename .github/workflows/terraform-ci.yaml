@@ -8,10 +8,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  BUCKET_NAME: "terraformars-state"
-  AWS_REGION: "eu-west-3"
-  SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -57,6 +53,9 @@ jobs:
   tf-plan:
     name: Validate and plan
     runs-on: ubuntu-22.04
+    env:
+      AWS_REGION: "eu-west-3"
+      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY_FILE }}
     needs:
       - changed-files
     strategy:
@@ -68,16 +67,16 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v3
 
+      - name: Setup Sops
+        id: sops
+        uses: mdgreenwald/mozilla-sops-action@v1.4.1
+
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-read-role
           role-session-name: GithubActionsSession
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Sops Binary Installer
-        id: sops
-        uses: mdgreenwald/mozilla-sops-action@v1.4.1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -102,11 +101,15 @@ jobs:
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         id: plan
         run: |
           terraform plan -input=false -no-color
         working-directory: ${{ matrix.dir }}
 
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
   app-token:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/app-token.yaml

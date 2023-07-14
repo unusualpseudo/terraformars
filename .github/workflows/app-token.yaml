@@ -6,10 +6,10 @@ on:
     outputs:
       token:
         description: "App token to use"
-        value: ${{ jobs.app-token.outputs.token }}
+        value: ${{ jobs.generate-bot-token.outputs.token }}
 
 jobs:
-  app-token:
+  generate-bot-token:
     runs-on: ubuntu-22.04
     steps:
       - name: Generate Token

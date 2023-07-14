@@ -85,8 +85,8 @@ resource "github_actions_secret" "app_private_key" {
 }
 
 
-resource "github_actions_secret" "sops_age_key" {
+resource "github_actions_secret" "sops_age_key_file" {
   repository      = github_repository.repository.name
-  secret_name     = "SOPS_AGE_KEY"
-  plaintext_value = var.secrets["sops_age_key"]
+  secret_name     = "SOPS_AGE_KEY_FILE"
+  plaintext_value = var.secrets["sops_age_key_file"]
 }
