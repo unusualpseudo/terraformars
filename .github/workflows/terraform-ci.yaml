@@ -2,41 +2,75 @@ name: Terraform CI
 
 on:
   workflow_dispatch:
-
+  push:
+    branches:
+      - main
+    paths:
+      - terraform/**
 
 jobs:
-  directories:
-    name: Directory Changes
-    runs-on: ubuntu-latest
-    steps:
-      - uses: unusualpseudo/terraform-monorepo-action@master
-        id: directories
-      - run: echo ${{ steps.directories.outputs.modules }}
+  changed-files:
+    name: Generate matrix for building images
+    runs-on: ubuntu-22.04
     outputs:
-      dirs: ${{ steps.directories.outputs.modules }}
-  terraform:
-    env:
-      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
-    name: Terraform CI
-    runs-on: ubuntu-latest
-    needs: directories
-    if: ${{ needs.directories.outputs.dirs != '' && toJson(fromJson(needs.directories.outputs.dirs)) != '[]' }}
-    strategy:
-      matrix:
-        directories: ${{ fromJson(needs.directories.outputs.dirs) }}
-    defaults:
-      run:
-        working-directory: ${{ matrix.directories }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Tools
+        run: |
+          sudo apt-get -y install jo
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v37.1.2
+        with:
+          dir_names: true
+          dir_names_max_depth: 3
+          json: true
+          files: |
+            terraform/**
+
+      - name: List all changed files
+        run: |
+          echo '${{ steps.changed-files.outputs.all_changed_files }}'
+
+      - name: Store changed projects
+        id: set-matrix
+        run: |
+          if [[ "${{ steps.changed-files.outputs.all_changed_files }}" == "[]" ]]; then
+            echo "matrix={\"project\":$(find terraform -type d -mindepth 1 -maxdepth 1 | jo -a)}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "matrix={\"project\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "${GITHUB_OUTPUT}"
+          fi
+
+  terraform:
+    name: Terraform CI
+    runs-on: ubuntu-22.04
+    needs:
+      - changed-files
+    strategy:
+      matrix: ${{ fromJSON(needs.changed-files.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Load secrets
+        id: load-secrets
+        uses: 1password/load-secrets-action@v1
+        with:
+          # Export loaded secrets as environment variables
+          export-env: true
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          AWS_ACCESS_KEY_ID: op://terraformars/aws/aws_access_key_id
+          AWS_SECRET_ACCESS_KEY: op://terraformars/aws/aws_secret_access_key
+          AWS_REGION: op://terraformars/aws/aws_region
+          SOPS_AGE_KEY: op://terraformars/sops/sops_age_key
+
       - name: Configure AWS Credentials Action For GitHub Actions
         uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Sops Binary Installer
         id: sops
