@@ -74,19 +74,11 @@ jobs:
           role-session-name: GithubActionsSession
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Load secrets
-        id: load-secrets
-        uses: 1password/load-secrets-action@v1
-        with:
-          # Export loaded secrets as environment variables
-          export-env: false
-        env:
-          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          SOPS_AGE_KEY: op://terraformars/sops/sops_age_key
-
       - name: Sops Binary Installer
         id: sops
         uses: mdgreenwald/mozilla-sops-action@v1.4.1
+        env:
+          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2

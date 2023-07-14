@@ -81,12 +81,7 @@ variable "webhook_events" {
   default = ["*"]
 }
 
-variable "discord_webhook_url" {
-  type     = string
-  nullable = false
-}
-
-variable "op_svc_token" {
-  type     = string
+variable "secrets" {
+  type     = map(string)
   nullable = false
 }
