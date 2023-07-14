@@ -99,6 +99,7 @@ jobs:
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color > plan.log
+        working-directory: ${{ matrix.dir }}
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
@@ -106,6 +107,7 @@ jobs:
         run: |
           terraform plan -input=false -no-color
         continue-on-error: true
+        working-directory: ${{ matrix.dir }}
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
