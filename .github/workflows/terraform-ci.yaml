@@ -11,6 +11,7 @@ on:
 env:
   BUCKET_NAME: "terraformars-state"
   AWS_REGION: "eu-west-3"
+  SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
 permissions:
   id-token: write # This is required for requesting the JWT
@@ -77,8 +78,6 @@ jobs:
       - name: Sops Binary Installer
         id: sops
         uses: mdgreenwald/mozilla-sops-action@v1.4.1
-        env:
-          SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
