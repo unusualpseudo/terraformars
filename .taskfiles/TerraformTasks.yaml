@@ -52,7 +52,7 @@ tasks:
     desc: Init aws provision
     dir: terraform/aws
     cmds:
-      - terraform init -input=false
+      - terraform init -input=false -upgrade
 
   aws-plan:
     desc: Show aws provision execution plan

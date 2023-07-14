@@ -1,5 +1,5 @@
 resource "aws_budgets_budget" "cost" {
-  name              = "daily_cost"
+  name              = "daily-cost"
   budget_type       = "COST"
   limit_amount      = "1"
   limit_unit        = "USD"
@@ -11,14 +11,14 @@ resource "aws_budgets_budget" "cost" {
     threshold                  = 100
     threshold_type             = "PERCENTAGE"
     notification_type          = "ACTUAL"
-    subscriber_email_addresses = [var.email]
+    subscriber_email_addresses = [data.sops_file.aws_secrets.data["email"]]
   }
 
 }
 
 
 resource "aws_budgets_budget" "s3_storage_budget" {
-  name         = "s3_budget"
+  name         = "s3-budget"
   budget_type  = "USAGE"
   limit_amount = "5"
   limit_unit   = "GB"
@@ -34,6 +34,6 @@ resource "aws_budgets_budget" "s3_storage_budget" {
     threshold                  = 50
     threshold_type             = "PERCENTAGE"
     notification_type          = "FORECASTED"
-    subscriber_email_addresses = [var.email]
+    subscriber_email_addresses = [data.sops_file.aws_secrets.data["email"]]
   }
 }

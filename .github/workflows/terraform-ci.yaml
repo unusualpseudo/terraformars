@@ -5,8 +5,16 @@ on:
   push:
     branches:
       - main
-    paths:
-      - terraform/**
+  pull_request:
+    branches: [main]
+
+env:
+  BUCKET_NAME: "terraformars-state"
+  AWS_REGION: "eu-west-3"
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 
 jobs:
   changed-files:
@@ -27,7 +35,7 @@ jobs:
         uses: tj-actions/changed-files@v37.1.2
         with:
           dir_names: true
-          dir_names_max_depth: 3
+          dir_names_max_depth: 2
           json: true
           files: |
             terraform/**
@@ -36,41 +44,45 @@ jobs:
         run: |
           echo '${{ steps.changed-files.outputs.all_changed_files }}'
 
-      - name: Store changed projects
+      - name: Store changed directories
         id: set-matrix
         run: |
           if [[ "${{ steps.changed-files.outputs.all_changed_files }}" == "[]" ]]; then
-            echo "matrix={\"project\":$(find terraform -type d -mindepth 1 -maxdepth 1 | jo -a)}" >> "${GITHUB_OUTPUT}"
+            echo "matrix={\"dir\":$(find terraform/ -type d -mindepth 1 -maxdepth 1 | jo -a)}" >> "${GITHUB_OUTPUT}"
           else
-            echo "matrix={\"project\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "${GITHUB_OUTPUT}"
+            echo "matrix={\"dir\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "${GITHUB_OUTPUT}"
           fi
 
-  terraform:
-    name: Terraform CI
+  tf-plan:
+    name: Validate and plan
     runs-on: ubuntu-22.04
     needs:
       - changed-files
     strategy:
       matrix: ${{ fromJSON(needs.changed-files.outputs.matrix) }}
     steps:
-      - name: Checkout
+      - name: Display working directory
+        run: echo  ${{ matrix.dir }}
+
+      - name: Git clone the repository
         uses: actions/checkout@v3
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::132873860067:role/github-actions-read-role
+          role-session-name: GithubActionsSession
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Load secrets
         id: load-secrets
         uses: 1password/load-secrets-action@v1
         with:
           # Export loaded secrets as environment variables
-          export-env: true
+          export-env: false
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
-          AWS_ACCESS_KEY_ID: op://terraformars/aws/aws_access_key_id
-          AWS_SECRET_ACCESS_KEY: op://terraformars/aws/aws_secret_access_key
-          AWS_REGION: op://terraformars/aws/aws_region
           SOPS_AGE_KEY: op://terraformars/sops/sops_age_key
-
-      - name: Configure AWS Credentials Action For GitHub Actions
-        uses: aws-actions/configure-aws-credentials@v2
 
       - name: Sops Binary Installer
         id: sops
@@ -79,16 +91,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.1.9
+          terraform_version: 1.5.3
           terraform_wrapper: true
 
       - name: Terraform Format
         id: fmt
-        run: terraform fmt -check
+        run: terraform fmt -check -recursive -diff
+        working-directory: ${{ matrix.dir }}
 
       - name: Terraform Init
         id: init
         run: terraform init
+        working-directory: ${{ matrix.dir }}
 
       - name: Terraform Validate
         id: validate
@@ -101,14 +115,20 @@ jobs:
           terraform plan -input=false -no-color
         continue-on-error: true
 
-      - name: Generate Token
-        id: generate-token
-        if: github.event_name == 'pull_request'
-        uses: tibdex/github-app-token@v1.8.0
-        with:
-          app_id: "${{ secrets.BOT_APP_ID }}"
-          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
 
+  app-token:
+    uses: ./.github/workflows/app-token.yaml
+    secrets: inherit
+
+  update-pr:
+    runs-on: ubuntu-22.04
+    needs:
+      - tf-plan
+      - app-token
+    steps:
       - name: Update Pull Request
         id: comment
         uses: actions/github-script@v6
@@ -116,7 +136,7 @@ jobs:
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
-          github-token: "${{ steps.generate-token.outputs.token }}"
+          github-token: "${{ needs.app-token.outputs.token }}"
           script: |
             const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
             #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
@@ -139,7 +159,3 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
-
-      - name: Terraform Plan Status
-        if: steps.plan.outcome == 'failure'
-        run: exit 1

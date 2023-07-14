@@ -1,0 +1,32 @@
+name: Generate Github App Token
+
+on:
+  workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      token:
+        description: "The first output string"
+        value: ${{ jobs.app-token.outputs.token }}
+
+jobs:
+  app-token:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Load secrets
+        id: load-secrets
+        uses: 1password/load-secrets-action@v1
+        with:
+          # Export loaded secrets as environment variables
+          export-env: false
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          BOT_APP_ID: op://terraformars/github/app_id
+          BOT_APP_PRIVATE_KEY: op://terraformars/github/app_private_key
+
+      - name: Generate Token
+        id: generate-token
+        if: github.event_name == 'pull_request'
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: "${{ steps.load-secrets.outputs.BOT_APP_ID }}"
+          private_key: "${{ steps.load-secrets.outputs.BOT_APP_PRIVATE_KEY }}"

@@ -6,16 +6,6 @@ data "sops_file" "aws_secrets" {
 }
 
 
-module "dynamodb" {
-  source     = "./modules/db/"
-  table_name = var.table_name
-}
-
-module "s3_budget" {
-  source = "./modules/budget/"
-  email  = data.sops_file.aws_secrets.data["email"]
-}
-
 
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.bucket_name
@@ -25,7 +15,6 @@ resource "aws_s3_bucket" "terraform_state" {
   lifecycle {
     prevent_destroy = false
   }
-  depends_on = [module.dynamodb]
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
@@ -82,16 +71,4 @@ resource "aws_s3_bucket_lifecycle_configuration" "terraform_bucket_lifecycle" {
     }
     status = "Enabled"
   }
-}
-
-output "s3_bucket_arn" {
-  value       = aws_s3_bucket.terraform_state.arn
-  description = "The ARN of the S3 bucket"
-}
-
-
-
-output "dynamodb_table_name" {
-  value       = module.dynamodb.terraform_locks.name
-  description = "The name of the DynamoDB table"
 }
