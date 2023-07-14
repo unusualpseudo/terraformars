@@ -10,9 +10,3 @@ resource "aws_dynamodb_table" "terraform_locks" {
   }
 
 }
-
-
-output "terraform_locks" {
-  value       = aws_dynamodb_table.terraform_locks
-  description = "The name of the DynamoDB table"
-}
