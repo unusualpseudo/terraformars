@@ -33,13 +33,13 @@ jobs:
     steps:
       - name: Generate Token
         id: generate-token
-        uses: tibdex/github-app-token@v1.8.0
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         with:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - name: Validate Renovate JSON
         run: jq type .github/renovate.json
@@ -50,7 +50,7 @@ jobs:
           echo "RENOVATE_DRY_RUN=${{ github.event.inputs.logLevel || env.LOG_LEVEL}}" >> $GITHUB_ENV
 
       - name: Renovate
-        uses: renovatebot/github-action@v38.1.8
+        uses: renovatebot/github-action@2a87d1192eaa0cac92b6566233afedf68fd3472a # v38.1.8
         with:
           configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
           token: "${{ steps.app-generate.outputs.token }}"

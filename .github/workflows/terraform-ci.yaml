@@ -21,7 +21,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - name: Setup Tools
         run: |
@@ -29,7 +29,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v37.1.2
+        uses: tj-actions/changed-files@2a968ff601949c81b47d9c1fdb789b0d25ddeea2 # v37.1.2
         with:
           dir_names: true
           dir_names_max_depth: 2
@@ -65,21 +65,21 @@ jobs:
         run: echo  ${{ matrix.dir }}
 
       - name: Git clone the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - name: Setup Sops
         id: sops
-        uses: mdgreenwald/mozilla-sops-action@v1.4.1
+        uses: mdgreenwald/mozilla-sops-action@7e45e21d7d26babb32110400a222048e0701d162 # v1.4.1
 
       - name: Configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355 # v2
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           role-session-name: GithubActionsSession
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@633666f66e0061ca3b725c73b2ec20cd13a8fdd1 # v2
         with:
           terraform_version: 1.5.3
           terraform_wrapper: true
@@ -117,7 +117,7 @@ jobs:
       - name: Generate Token
         if: github.event_name == 'pull_request'
         id: generate-token
-        uses: tibdex/github-app-token@v1.8.0
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         with:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
@@ -126,7 +126,7 @@ jobs:
       - name: Update Pull Request
         if: github.event_name == 'pull_request'
         id: comment
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
