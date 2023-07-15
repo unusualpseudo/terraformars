@@ -1,0 +1,104 @@
+name: Terraform Plan
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+env:
+  TERRAFORM_VERSION: "1.5.3"
+  AWS_REGION: "eu-west-3"
+
+jobs:
+  changed-files:
+    name: Generate matrix
+    runs-on: ubuntu-22.04
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+
+      - name: Setup Tools
+        run: |
+          sudo apt-get -y install jo
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@2a968ff601949c81b47d9c1fdb789b0d25ddeea2 # v37.1.2
+        with:
+          dir_names: true
+          dir_names_max_depth: 2
+          json: true
+          files: |
+            terraform/**
+
+      - name: List all changed files
+        run: |
+          echo '${{ steps.changed-files.outputs.all_changed_files }}'
+
+      - name: Store changed directories
+        id: set-matrix
+        run: |
+          if [[ "${{ steps.changed-files.outputs.all_changed_files }}" == "[]" ]]; then
+            echo "matrix={\"dir\":$(find terraform/ -type d -mindepth 1 -maxdepth 1 | jo -a)}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "matrix={\"dir\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "${GITHUB_OUTPUT}"
+          fi
+
+  tf-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-22.04
+    env:
+      SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY_FILE }}
+    needs:
+      - changed-files
+    strategy:
+      matrix: ${{ fromJSON(needs.changed-files.outputs.matrix) }}
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
+
+      - name: Display working directory
+        run: echo  ${{ matrix.dir }}
+
+      - name: Get PR ID
+        id: pr-id
+        shell: bash
+        env:
+          GITHUB_REF: ${{ inputs.github_ref }}
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Generate Token
+        id: generate-token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Configure aws credentials
+        uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355 # v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          role-session-name: GithubActionsSession
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Setup Sops
+        id: sops
+        uses: mdgreenwald/mozilla-sops-action@7e45e21d7d26babb32110400a222048e0701d162 # v1.4.1
+
+      - name: Terraform Plan
+        uses: ./.github/plan
+        with:
+          terraform_directory: ${{ matrix.dir }}
+          github_token: ${{ steps.generate-token.outputs.token }}
+          pr_id: ${{ steps.pr-id.outputs.PR_NUMBER }}
