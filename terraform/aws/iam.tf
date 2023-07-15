@@ -48,15 +48,14 @@ resource "aws_iam_policy" "github_actions_s3_access_policy" {
     Statement = [
       {
         Action = [
-          "s3:GetObject",
-        "s3:PutObject"]
+        "s3:*"]
         Effect = "Allow"
         Resource = [
           format("%s/%s", aws_s3_bucket.terraform_state.arn, "*")
         ]
       },
       {
-        Action = ["s3:ListBucket"]
+        Action = ["s3:*"]
         Effect = "Allow"
         Resource = [
           aws_s3_bucket.terraform_state.arn
@@ -77,11 +76,7 @@ resource "aws_iam_policy" "dynamodb_access_policy" {
     Statement = [
       {
         Effect = "Allow"
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:GetItem",
-          "dynamodb:DescribeTable"
-        ]
+        Action = ["dynamodb:*"]
         Resource = [
           aws_dynamodb_table.terraform_locks.arn
         ]
@@ -111,7 +106,6 @@ resource "aws_iam_policy" "budget_access_policy" {
     ]
   })
 }
-
 
 
 resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_access_attachment" {
