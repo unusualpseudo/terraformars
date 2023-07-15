@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   changed-files:
-    name: Generate matrix for building images
+    name: Generate matrix
     runs-on: ubuntu-22.04
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}

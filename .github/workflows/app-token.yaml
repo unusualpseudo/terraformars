@@ -6,16 +6,24 @@ on:
     outputs:
       token:
         description: "App token to use"
-        value: ${{ jobs.generate-bot-token.outputs.token }}
+        value: ${{ jobs.generate-token.outputs.token }}
 
 jobs:
-  generate-bot-token:
+  generate-token:
     runs-on: ubuntu-22.04
+    # Map the job outputs to step outputs
+    outputs:
+      token: ${{ steps.generate-token.outputs.token }}
     steps:
       - name: Generate Token
         id: generate-token
-        if: github.event_name == 'pull_request'
         uses: tibdex/github-app-token@v1.8.0
         with:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+        env:
+          token: ${{ steps.generate-token.outputs.token }}
+      - name: Encrypt token
+        id: encrypt-token
+        run: |
+          echo ${{ steps.generate-token.outputs.token }}
