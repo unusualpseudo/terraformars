@@ -1,5 +1,5 @@
-resource "aws_budgets_budget" "cost" {
-  name              = "daily-cost"
+resource "aws_budgets_budget" "aws_daily_budget" {
+  name              = "aws-daily-cost"
   budget_type       = "COST"
   limit_amount      = "1"
   limit_unit        = "USD"
@@ -17,8 +17,8 @@ resource "aws_budgets_budget" "cost" {
 }
 
 
-resource "aws_budgets_budget" "s3_storage_budget" {
-  name         = "s3-budget"
+resource "aws_budgets_budget" "s3_monthly_budget" {
+  name         = "s3-monthly-budget"
   budget_type  = "USAGE"
   limit_amount = "5"
   limit_unit   = "GB"

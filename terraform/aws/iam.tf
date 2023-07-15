@@ -11,20 +11,20 @@ resource "aws_iam_openid_connect_provider" "github_oidc" {
 
 
 
-resource "aws_iam_role" "github_actions_read_role" {
-  name = "github-actions-read-role"
+resource "aws_iam_role" "github_actions_role" {
+  name = "github-actions-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = "sts:AssumeRoleWithWebIdentity"
-        Principal = {
-          Federated = aws_iam_openid_connect_provider.github_oidc.arn
+        "Effect" = "Allow"
+        "Action" = "sts:AssumeRoleWithWebIdentity"
+        "Principal" = {
+          "Federated" = aws_iam_openid_connect_provider.github_oidc.arn
         },
-        Condition = {
-          StringEquals = {
+        "Condition" = {
+          "StringEquals" = {
             "token.actions.githubusercontent.com:sub" = [
               "repo:unusualpseudo/terraformars:pull_request",
               "repo:unusualpseudo/terraformars:ref:refs/heads/main"
@@ -38,107 +38,28 @@ resource "aws_iam_role" "github_actions_read_role" {
 }
 
 
-resource "aws_iam_policy" "read_policy" {
-  name = "read-policy"
+resource "aws_iam_policy" "github_actions_s3_access_policy" {
+  name        = "s3-github-actions-access-policy"
+  description = "IAM policy for S3 access"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action = ["s3:ListBucket*"]
+        Action = ["s3:*"]
         Effect = "Allow"
         Resource = [
           "arn:aws:s3:::${var.bucket_name}"
         ]
-      },
-      {
-        Action : ["s3:GetObject"],
-        Effect : "Allow",
-        Resource : [
-          "arn:aws:s3:::${var.bucket_name}/*",
-        ]
       }
-    ],
-  })
-}
-
-
-resource "aws_iam_role_policy_attachment" "read_role_policy_attachment" {
-  role       = aws_iam_role.github_actions_read_role.name
-  policy_arn = aws_iam_policy.read_policy.arn
-}
-
-resource "aws_iam_role_policy_attachment" "read_role_dynamodb_access_attachment" {
-  role       = aws_iam_role.github_actions_read_role.name
-  policy_arn = aws_iam_policy.read_policy.arn
-}
-
-
-resource "aws_iam_role" "github_actions_write_role" {
-  name = "github-actions-write-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sts:AssumeRoleWithWebIdentity"
-        Principal = {
-          Federated = aws_iam_openid_connect_provider.github_oidc.arn
-        },
-        Condition = {
-          StringEquals = {
-            "token.actions.githubusercontent.com:sub" = [
-              "repo:unusualpseudo/terraformars:push",
-              "repo:unusualpseudo/terraformars:ref:refs/heads/main"
-            ],
-            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
-          }
-        }
-      },
     ]
   })
 }
 
 
-resource "aws_iam_policy" "write_policy" {
-  name = "write-policy"
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = ["s3:ListBucket*"]
-        Effect = "Allow"
-        Resource = [
-          "arn:aws:s3:::${var.bucket_name}"
-        ]
-      },
-      {
-        Action : ["s3:GetObject", "s3:PutObject"],
-        Effect : "Allow",
-        Resource : [
-          "arn:aws:s3:::${var.bucket_name}/*",
-        ]
-      }
-    ],
-  })
-}
-
-
-resource "aws_iam_role_policy_attachment" "write_role_policy_attachment" {
-  role       = aws_iam_role.github_actions_write_role.name
-  policy_arn = aws_iam_policy.write_policy.arn
-}
-
-
-resource "aws_iam_role_policy_attachment" "write_role_dynamodb_access_attachment" {
-  role       = aws_iam_role.github_actions_write_role.name
-  policy_arn = aws_iam_policy.read_policy.arn
-}
-
-resource "aws_iam_policy" "dynamodb_access" {
-  name        = "DynamoDBAccessPolicy"
+resource "aws_iam_policy" "dynamodb_access_policy" {
+  name        = "dynamodb-access-policy"
   description = "IAM policy for DynamoDB access"
 
   policy = jsonencode({
@@ -150,8 +71,49 @@ resource "aws_iam_policy" "dynamodb_access" {
           "dynamodb:PutItem",
           "dynamodb:GetItem"
         ]
-        Resource = aws_dynamodb_table.terraform_locks.arn
+        Resource = [
+          aws_dynamodb_table.terraform_locks.arn
+        ]
       }
     ]
   })
+}
+
+
+resource "aws_iam_policy" "budget_access_policy" {
+  name        = "budget-access-policy"
+  description = "IAM policy for AWS budget access"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "budgets:ViewBudget"
+        ]
+        Resource = [
+          aws_budgets_budget.aws_daily_budget.arn,
+          aws_budgets_budget.s3_monthly_budget.arn
+        ]
+      }
+    ]
+  })
+}
+
+
+
+resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_access_attachment" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.dynamodb_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_s3_access_policy_attachment" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.github_actions_s3_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "github_actions_budget_access_policy_attachment" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.budget_access_policy.arn
 }

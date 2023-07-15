@@ -74,7 +74,7 @@ jobs:
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-read-role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           role-session-name: GithubActionsSession
           aws-region: ${{ env.AWS_REGION }}
 
@@ -83,6 +83,10 @@ jobs:
         with:
           terraform_version: 1.5.3
           terraform_wrapper: true
+
+      - name: Display working directory
+        run: echo  ${{ env }}
+
 
       - name: Terraform Format
         id: fmt
@@ -110,6 +114,7 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
   app-token:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/app-token.yaml

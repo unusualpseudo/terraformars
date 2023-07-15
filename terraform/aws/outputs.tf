@@ -1,9 +1,5 @@
-output "github_actions_read_role_arn" {
-  value = aws_iam_role.github_actions_read_role.arn
-}
-
-output "github_actions_write_role_arn" {
-  value = aws_iam_role.github_actions_write_role.arn
+output "github_actions_role_arn" {
+  value = aws_iam_role.github_actions_role.arn
 }
 
 output "s3_bucket_arn" {
