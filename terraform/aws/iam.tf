@@ -68,62 +68,63 @@ resource "aws_iam_policy" "github_actions_s3_access_policy" {
 
 
 
-# resource "aws_iam_policy" "dynamodb_access_policy" {
-#   name        = "dynamodb-access-policy"
-#   description = "IAM policy for DynamoDB access"
+resource "aws_iam_policy" "dynamodb_access_policy" {
+  name        = "dynamodb-access-policy"
+  description = "IAM policy for DynamoDB access"
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "dynamodb:PutItem",
-#           "dynamodb:GetItem"
-#         ]
-#         Resource = [
-#           aws_dynamodb_table.terraform_locks.arn
-#         ]
-#       }
-#     ]
-#   })
-# }
-
-
-# resource "aws_iam_policy" "budget_access_policy" {
-#   name        = "budget-access-policy"
-#   description = "IAM policy for AWS budget access"
-
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "budgets:ViewBudget"
-#         ]
-#         Resource = [
-#           aws_budgets_budget.aws_daily_budget.arn,
-#           aws_budgets_budget.s3_monthly_budget.arn
-#         ]
-#       }
-#     ]
-#   })
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:DescribeTable"
+        ]
+        Resource = [
+          aws_dynamodb_table.terraform_locks.arn
+        ]
+      }
+    ]
+  })
+}
 
 
+resource "aws_iam_policy" "budget_access_policy" {
+  name        = "budget-access-policy"
+  description = "IAM policy for AWS budget access"
 
-# resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_access_attachment" {
-#   role       = aws_iam_role.github_actions_role.name
-#   policy_arn = aws_iam_policy.dynamodb_access_policy.arn
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "budgets:ViewBudget"
+        ]
+        Resource = [
+          aws_budgets_budget.aws_daily_budget.arn,
+          aws_budgets_budget.s3_monthly_budget.arn
+        ]
+      }
+    ]
+  })
+}
+
+
+
+resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_access_attachment" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.dynamodb_access_policy.arn
+}
 
 resource "aws_iam_role_policy_attachment" "github_actions_s3_access_policy_attachment" {
   role       = aws_iam_role.github_actions_role.name
   policy_arn = aws_iam_policy.github_actions_s3_access_policy.arn
 }
 
-# resource "aws_iam_role_policy_attachment" "github_actions_budget_access_policy_attachment" {
-#   role       = aws_iam_role.github_actions_role.name
-#   policy_arn = aws_iam_policy.budget_access_policy.arn
-# }
+resource "aws_iam_role_policy_attachment" "github_actions_budget_access_policy_attachment" {
+  role       = aws_iam_role.github_actions_role.name
+  policy_arn = aws_iam_policy.budget_access_policy.arn
+}
