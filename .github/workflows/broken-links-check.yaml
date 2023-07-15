@@ -15,16 +15,16 @@ jobs:
     steps:
       - name: Generate Token
         id: generate-token
-        uses: tibdex/github-app-token@v1.8.0
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
         with:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - name: Scan for broken links
-        uses: lycheeverse/lychee-action@v1
+        uses: lycheeverse/lychee-action@ec3ed119d4f44ad2673a7232460dc7dff59d2421 # v1
         id: lychee
         env:
           GITHUB_TOKEN: "${{ needs.app-token.outputs.token }}"
@@ -36,7 +36,7 @@ jobs:
 
       - name: Find Broken links issues
         id: broken-link-check-issue
-        uses: micalevisk/last-issue-action@v2
+        uses: micalevisk/last-issue-action@305829d9728f47beb0029417167a0af890edfd6e # v2
         with:
           state: open
           labels: |
@@ -44,7 +44,7 @@ jobs:
 
 
       - name: Update issues
-        uses: peter-evans/create-issue-from-file@v4
+        uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f # v4
         with:
           title: Broken links detected 🔗
           issue-number: "${{ steps.broken-link-check-issue.outputs.issue-number }}"
