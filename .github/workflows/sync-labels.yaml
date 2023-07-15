@@ -10,16 +10,18 @@ on:
 
 
 jobs:
-  app-token:
-    uses: ./.github/workflows/app-token.yaml
-    secrets: inherit
 
   labels:
     name: Sync PR Labels
-    needs:
-      - app-token
     runs-on: ubuntu-22.04
     steps:
+      - name: Generate Token
+        id: generate-token
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
       - name: Checkout
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
@@ -27,5 +29,5 @@ jobs:
         uses: EndBug/label-sync@da00f2c11fdb78e4fae44adac2fdd713778ea3e8 # renovate: tag=v2.3.2
         with:
           config-file: .github/labels.yaml
-          token: "${{ needs.app-token.outputs.token }}"
+          token: "${{ steps.generate-token.outputs.token }}"
           delete-other-labels: true
