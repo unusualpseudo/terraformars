@@ -1,0 +1,64 @@
+name: Tflint Checks on Terraform Code
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read # This is required for actions/checkout
+  pull-requests: write
+
+jobs:
+  tflint-checks:
+    runs-on: ubuntu-22.04
+    steps:
+
+    - name : Check out Git Repository
+      uses: actions/checkout@v3
+
+    - name: Generate Token
+      id: generate-token
+      uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
+      with:
+        app_id: "${{ secrets.BOT_APP_ID }}"
+        private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+    - uses: terraform-linters/setup-tflint@v2
+      name: Setup TFLint
+      with:
+        github_token: "${{ steps.generate-token.outputs.token }}"
+
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+
+      # --force continue with workflow when an error raises
+    - name: Run TFLint
+      run: tflint -f compact --recursive
+
+
+  tfsec-checks:
+      runs-on: ubuntu-22.04
+      steps:
+      - name : Check out Git Repository
+        uses: actions/checkout@v2
+
+      - name: Generate Token
+        id: generate-token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.2.0
+        with:
+          github_token: "${{ steps.generate-token.outputs.token }}"
