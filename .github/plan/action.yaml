@@ -44,7 +44,7 @@ runs:
     - name: Comment Plan
       if: github.event_name == 'pull_request'
       id: comment-plan
-      uses: peter-evans/create-or-update-comment@v2
+      uses: peter-evans/create-or-update-comment@c6c9a1a66007646a28c153e2a8580a5bad27bcfa # v3
       with:
         token: ${{ inputs.github_token }}
         issue-number: ${{ inputs.pr_id }}
