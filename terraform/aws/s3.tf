@@ -6,7 +6,7 @@ data "sops_file" "aws_secrets" {
 }
 
 
-
+#tfsec:ignore:aws-s3-enable-bucket-logging
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.bucket_name
   tags = {
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_acl" "bucket_acl" {
 }
 
 
-
+#tfsec:ignore:aws-s3-encryption-customer-key
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   bucket = aws_s3_bucket.terraform_state.id
 

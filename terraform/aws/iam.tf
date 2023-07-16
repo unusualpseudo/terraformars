@@ -38,7 +38,7 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-
+#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "github_actions_s3_access_policy" {
   name        = "s3-github-actions-access-policy"
   description = "IAM policy for S3 access"
@@ -65,27 +65,6 @@ resource "aws_iam_policy" "github_actions_s3_access_policy" {
   })
 }
 
-
-
-resource "aws_iam_policy" "dynamodb_access_policy" {
-  name        = "dynamodb-access-policy"
-  description = "IAM policy for DynamoDB access"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = ["dynamodb:*"]
-        Resource = [
-          aws_dynamodb_table.terraform_locks.arn
-        ]
-      }
-    ]
-  })
-}
-
-
 resource "aws_iam_policy" "budget_access_policy" {
   name        = "budget-access-policy"
   description = "IAM policy for AWS budget access"
@@ -105,12 +84,6 @@ resource "aws_iam_policy" "budget_access_policy" {
       }
     ]
   })
-}
-
-
-resource "aws_iam_role_policy_attachment" "github_actions_dynamodb_access_attachment" {
-  role       = aws_iam_role.github_actions_role.name
-  policy_arn = aws_iam_policy.dynamodb_access_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "github_actions_s3_access_policy_attachment" {

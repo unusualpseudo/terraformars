@@ -7,9 +7,10 @@ on:
     - cron: "0 6 * * *" # Every day at 6am
   pull_request:
     branches: ["main"]
+  push:
+    branches: ["main"]
 
 jobs:
-
   check:
     runs-on: ubuntu-20.04
     steps:
@@ -27,7 +28,7 @@ jobs:
         uses: lycheeverse/lychee-action@ec3ed119d4f44ad2673a7232460dc7dff59d2421 # v1
         id: lychee
         env:
-          GITHUB_TOKEN: "${{ needs.app-token.outputs.token }}"
+          GITHUB_TOKEN: "${{ steps.app-token.outputs.token }}"
         with:
           args: >
             --verbose
@@ -38,12 +39,12 @@ jobs:
         id: broken-link-check-issue
         uses: micalevisk/last-issue-action@305829d9728f47beb0029417167a0af890edfd6e # v2
         with:
-          state: open
+          state: all
           labels: |
             broken-links
 
-
       - name: Update issues
+        if: env.lychee_exit_code != 0
         uses: peter-evans/create-issue-from-file@433e51abf769039ee20ba1293a088ca19d573b7f # v4
         with:
           title: Broken links detected 🔗
@@ -52,3 +53,10 @@ jobs:
           token: "${{ steps.generate-token.outputs.token }}"
           labels: |
             broken-links
+
+      - name: Close open issues
+        if: env.lychee_exit_code == 0 && steps.broken-link-check-issue.outputs.has-found == true
+        uses: peter-evans/close-issue@v3
+        with:
+          token: "${{ steps.generate-token.outputs.token }}"
+          issue-number: "${{ steps.broken-link-check-issue.outputs.issue-number }}"

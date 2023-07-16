@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3
 
       - name: Validate Renovate JSON
-        run: jq type .github/renovate.json
+        run: jq type .github/renovate.json5
 
       - name: Override default config with input variables
         run: |

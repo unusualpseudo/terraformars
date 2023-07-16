@@ -7,7 +7,6 @@
       "Resource": [
         "arn:aws:iam::${ACCOUNT_ID}:policy/budget-access-policy",
         "arn:aws:iam::${ACCOUNT_ID}:policy/s3-github-actions-access-policy",
-        "arn:aws:iam::${ACCOUNT_ID}:policy/dynamodb-access-policy",
         "arn:aws:iam::${ACCOUNT_ID}:role/github-actions-role",
         "arn:aws:iam::${ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
       ]

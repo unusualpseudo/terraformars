@@ -8,12 +8,6 @@ output "s3_bucket_arn" {
   description = "The arn of the S3 bucket"
 }
 
-output "terraform_locks" {
-  value       = aws_dynamodb_table.terraform_locks.arn
-  description = "The arn of the DynamoDB table"
-}
-
-
 output "aws_daily_budget" {
   value       = aws_budgets_budget.aws_daily_budget.arn
   description = "The arn of the daily budget resource"

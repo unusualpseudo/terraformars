@@ -12,7 +12,7 @@ inputs:
     description: "Pull request ID"
     required: true
   github_token:
-    description: 'GitHub token for auth'
+    description: "GitHub token for auth"
     required: true
 
 runs:
@@ -24,6 +24,12 @@ runs:
       shell: bash
       run: terraform init
 
+    - name: Terraform Validate
+      id: validate
+      working-directory: ${{ inputs.terraform_directory }}
+      shell: bash
+      run: terraform validate
+
     - name: Terraform Plan
       id: plan
       working-directory: ${{ inputs.terraform_directory }}
@@ -31,10 +37,12 @@ runs:
       continue-on-error: true
       run: |
         echo 'plan<<EOF' >> $GITHUB_OUTPUT
-        terraform plan -no-color -out=${{ inputs.pr_id }}-tf-plan >> $GITHUB_OUTPUT
+        terraform plan -no-color -out=tf-plan >> $GITHUB_OUTPUT
         echo 'EOF' >> $GITHUB_OUTPUT
 
+
     - name: Comment Plan
+      if: github.event_name == 'pull_request'
       id: comment-plan
       uses: peter-evans/create-or-update-comment@v2
       with:
@@ -46,6 +54,7 @@ runs:
           ```
           ${{ steps.plan.outputs.plan }}
           ```
+
     - name: Terraform Plan Status
       if: steps.plan.outcome == 'failure'
       shell: bash

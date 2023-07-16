@@ -4,16 +4,16 @@ variable "repo_name" {
   nullable    = false
 }
 
+variable "vulnerability_alerts" {
+  description = "Enable github vulnerability alerts"
+  type        = bool
+  default     = true
+}
+
 variable "description" {
   description = "A description of the repository"
   type        = string
   nullable    = false
-}
-
-variable "default_branch_name" {
-  description = "The default branch for the repo. Branch protection settings will be applied to the branch with this name. Currently defaults to `main`."
-  type        = string
-  default     = "main"
 }
 
 variable "visibility" {

@@ -3,10 +3,3 @@ variable "bucket_name" {
   type        = string
   default     = "terraformars-state"
 }
-
-
-variable "table_name" {
-  description = "Terraform state lock table name"
-  type        = string
-  default     = "TerraformarsStateLock"
-}

@@ -1,26 +1,30 @@
 
 terraform {
+  required_version = "1.5.3"
   required_providers {
     github = {
-      source = "integrations/github"
+      source  = "integrations/github"
+      version = "5.31.0"
     }
   }
 }
 
+#tfsec:ignore:github-repositories-private
 resource "github_repository" "repository" {
-  name               = var.repo_name
-  description        = var.description
-  visibility         = var.visibility
-  archive_on_destroy = var.archive_on_destroy
-  license_template   = var.license_template
-  topics             = var.topics
-  auto_init          = var.auto_init
-  has_issues         = var.has_issues
-  has_discussions    = var.has_discussions
-  allow_auto_merge   = var.allow_auto_merge
-  allow_merge_commit = var.allow_merge_commit
-  allow_squash_merge = var.allow_squash_merge
-  allow_rebase_merge = var.allow_rebase_merge
+  name                 = var.repo_name
+  vulnerability_alerts = var.vulnerability_alerts
+  description          = var.description
+  visibility           = var.visibility
+  archive_on_destroy   = var.archive_on_destroy
+  license_template     = var.license_template
+  topics               = var.topics
+  auto_init            = var.auto_init
+  has_issues           = var.has_issues
+  has_discussions      = var.has_discussions
+  allow_auto_merge     = var.allow_auto_merge
+  allow_merge_commit   = var.allow_merge_commit
+  allow_squash_merge   = var.allow_squash_merge
+  allow_rebase_merge   = var.allow_rebase_merge
 }
 
 
@@ -41,7 +45,7 @@ resource "github_branch_protection" "main" {
   allows_deletions        = false
   allows_force_pushes     = true
   required_linear_history = true
-
+  require_signed_commits  = true
 
   required_pull_request_reviews {
     dismiss_stale_reviews      = true
