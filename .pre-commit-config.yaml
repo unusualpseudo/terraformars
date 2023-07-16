@@ -12,7 +12,7 @@ repos:
       - id: terraform_tfsec
         args:
           - >
-            --args=--config-file=__GIT_WORKING_DIR__/.tfsec.yaml
+            --args=--config-file=.tfsec.yaml
             --format json
 
 
