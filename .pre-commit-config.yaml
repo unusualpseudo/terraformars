@@ -12,7 +12,9 @@ repos:
       - id: terraform_tfsec
         args:
           - >
-            --args=--format json
+            --args=--config-file=__GIT_WORKING_DIR__/.tfsec.yaml
+            --format json
+
 
   - repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.1

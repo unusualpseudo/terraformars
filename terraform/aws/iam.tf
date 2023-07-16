@@ -38,7 +38,6 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
-#tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "github_actions_s3_access_policy" {
   name        = "s3-github-actions-access-policy"
   description = "IAM policy for S3 access"
