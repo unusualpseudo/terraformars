@@ -1,6 +1,6 @@
 # terraformars
 
-![broken links](https://github.com/unusualpseudo/terraformars/actions/workflows/broken-links-check.yaml/badge.svg)
+![links](https://github.com/unusualpseudo/terraformars/actions/workflows/broken-links-check.yaml/badge.svg)
 
 ![cicd](https://github.com/unusualpseudo/terraformars/actions/workflows/tf-cicd.yaml/badge.svg)
 
