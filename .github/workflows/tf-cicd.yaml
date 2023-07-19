@@ -97,7 +97,7 @@ jobs:
         uses: mdgreenwald/mozilla-sops-action@7e45e21d7d26babb32110400a222048e0701d162 # v1.4.1
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@633666f66e0061ca3b725c73b2ec20cd13a8fdd1 # v2
         with:
           terraform_version: 1.5.3
           terraform_wrapper: true

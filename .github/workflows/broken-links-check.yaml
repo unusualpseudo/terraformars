@@ -56,7 +56,7 @@ jobs:
 
       - name: Close open issues
         if: env.lychee_exit_code == 0 && steps.broken-link-check-issue.outputs.has-found == true
-        uses: peter-evans/close-issue@v3
+        uses: peter-evans/close-issue@276d7966e389d888f011539a86c8920025ea0626 # v3
         with:
           token: "${{ steps.generate-token.outputs.token }}"
           issue-number: "${{ steps.broken-link-check-issue.outputs.issue-number }}"
