@@ -47,14 +47,17 @@ resource "aws_iam_policy" "github_actions_s3_access_policy" {
     Statement = [
       {
         Action = [
-        "s3:*"]
+          "s3:GetObject",
+        "s3:ListBucket"]
         Effect = "Allow"
         Resource = [
-          format("%s/%s", aws_s3_bucket.terraform_state.arn, "*")
+          format("%s/%s", aws_s3_bucket.terraform_state.arn, "aws"),
+          format("%s/%s", aws_s3_bucket.terraform_state.arn, "cloudflare"),
+          format("%s/%s", aws_s3_bucket.terraform_state.arn, "github")
         ]
       },
       {
-        Action = ["s3:*"]
+        Action = ["s3:PutObject"]
         Effect = "Allow"
         Resource = [
           aws_s3_bucket.terraform_state.arn
