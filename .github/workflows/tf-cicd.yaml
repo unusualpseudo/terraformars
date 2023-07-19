@@ -1,4 +1,4 @@
-name: Terraform Plan
+name: cicd
 
 on:
   workflow_dispatch:

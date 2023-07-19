@@ -17,7 +17,6 @@ jobs:
   tfsec:
     name: Run tfsec sarif report
     runs-on: ubuntu-22.04
-
     steps:
       - name: Clone repo
         uses: actions/checkout@v3

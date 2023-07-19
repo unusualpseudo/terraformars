@@ -1,5 +1,5 @@
 ---
-name: Broken links checks
+name: links
 
 on:
   workflow_dispatch:
