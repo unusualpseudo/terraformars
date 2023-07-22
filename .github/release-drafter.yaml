@@ -1,0 +1,28 @@
+---
+name-template: 'Draft'
+tag-template: 'v1.0.0'
+change-title-escapes: '\<*_&'
+categories:
+  - title: "🚀 Features"
+    label: "feat"
+  - title: "🐛 Bug Fixes"
+    labels:
+      - "fix"
+  - title: "🧩 Dependency Updates"
+    collapse-after: 5
+    labels:
+      - "deps"
+      - "dependencies"
+      - "bump"
+      - "chore"
+  - title: '🔬 Others'
+    labels:
+      - 'style'
+      - 'refactor'
+      - 'test'
+      - 'ci'
+    collapse-after: 5
+template: |
+  ## Changes
+
+  $CHANGES

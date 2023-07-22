@@ -1,0 +1,26 @@
+---
+name: "Draft Release"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+
+jobs:
+
+  update_release_draft:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Generate token
+        id: generate-token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92 # v1.8.0
+        with:
+          app_id: "${{ secrets.BOT_APP_ID }}"
+          private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+
+      - name: Prepare release draft
+        uses: release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772 # v5.24.0
+        with:
+          config-name: release-drafter.yaml
+        env:
+          GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
