@@ -25,7 +25,9 @@ jobs:
         uses: aquasecurity/tfsec-sarif-action@9a83b5c3524f825c020e356335855741fd02745f
         with:
           sarif_file: tfsec.sarif
-          tfsec_args: verbose debug config-file=.tfsec.yaml force-all-dirs
+          config_file: .tfsec.yaml
+          args:  --verbose --debug
+          full_repo_scan: true
 
       - name: Run tfsec
         run: |
