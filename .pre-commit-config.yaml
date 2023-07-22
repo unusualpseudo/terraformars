@@ -10,9 +10,10 @@ repos:
         args:
           - --tf-init-args=-lockfile=readonly
       - id: terraform_tfsec
+        files: ^terraform/
         args:
           - >
-            --args=--config-file=.tfsec.yaml
+            --args=--config-file=__GIT_WORKING_DIR__/.tfsec.yaml
             --format json
 
 

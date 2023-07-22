@@ -27,7 +27,9 @@ jobs:
           sarif_file: tfsec.sarif
           args: |
             --force-all-dirs
-            --config-file=.tfsec.yaml
+            --verbose
+            --debug
+            --config-file=${GITHUB_WORKSPACE}.tfsec.yaml
 
       - name: Run tfsec
         run: |

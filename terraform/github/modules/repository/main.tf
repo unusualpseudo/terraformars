@@ -9,7 +9,6 @@ terraform {
   }
 }
 
-#tfsec:ignore:github-repositories-private
 resource "github_repository" "repository" {
   name                 = var.repo_name
   vulnerability_alerts = var.vulnerability_alerts
