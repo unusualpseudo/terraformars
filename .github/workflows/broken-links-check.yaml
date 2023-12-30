@@ -37,7 +37,7 @@ jobs:
 
       - name: Find Broken links issues
         id: broken-link-check-issue
-        uses: micalevisk/last-issue-action@305829d9728f47beb0029417167a0af890edfd6e # v2
+        uses: micalevisk/last-issue-action@0d40124cc99ac8601c2516007f0c98ef3d27537b # v2
         with:
           state: all
           labels: |
