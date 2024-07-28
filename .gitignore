@@ -1,7 +1,12 @@
-# Terraform
+# terraform
 .terraform
 .terraform.tfstate*
 terraform.tfstate*
 
-# Environments
+# environments
 .envrc
+
+
+# idea
+.idea
+terraformars.iml

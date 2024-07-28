@@ -14,11 +14,11 @@ variable "repositories" {
     }
     "dotfiles" = {
       description = "dotfiles for my ubuntu"
-      topics      = ["fish", "chezmoi"]
+      topics      = ["fish", "tmux", "debian"]
     }
     "nexus" = {
       description = "my home lab"
-      topics      = ["k8s", "k3s", "homelab", "ansible", "fluxcd"]
+      topics      = ["k3s", "homelab", "ansible", "fluxcd"]
     }
   }
 }
