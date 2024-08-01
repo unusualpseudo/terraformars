@@ -1,9 +1,5 @@
 ---
-aws:
-  - "terraform/aws/*"
 cloudflare:
   - "terraform/cloudflare/*"
-github:
-  - "terraform/github/*"
 cicd:
   - ".github/**/*"

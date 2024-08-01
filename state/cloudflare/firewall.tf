@@ -1,5 +1,5 @@
 resource "cloudflare_ruleset" "zone_waf_ruleset" {
-  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  zone_id = data.cloudflare_zones.domain.zones[0]["id"]
   name    = "custom waf"
   kind    = "zone"
   phase   = "http_request_firewall_custom"

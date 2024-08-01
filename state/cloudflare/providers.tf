@@ -15,12 +15,6 @@ terraform {
       version = "3.5.1"
     }
   }
-  backend "s3" {
-    bucket  = "terraformars-state"
-    key     = "cloudflare/terraform.tfstate"
-    region  = "eu-west-3"
-    encrypt = true
-  }
 }
 
 provider "cloudflare" {

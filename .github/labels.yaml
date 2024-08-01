@@ -1,12 +1,4 @@
 ---
-- name: aws
-  color: "ff9900"
-  description: >-
-    Changes made in the aws module
-- name: github
-  color: "72ccf3"
-  description: >-
-    Changes made in the github module
 - name: cloudflare
   color: "171515"
   description: >-
