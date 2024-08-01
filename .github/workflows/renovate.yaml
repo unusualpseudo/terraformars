@@ -37,6 +37,8 @@ jobs:
         with:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
+        env:
+          RENOVATE_TOKEN: "${{ outputs.token }}"
 
       - name: Checkout repo
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
@@ -49,8 +51,12 @@ jobs:
           echo "RENOVATE_DRY_RUN=${{ github.event.inputs.dryRun || env.RENOVATE_DRY_RUN}}" >> $GITHUB_ENV
           echo "RENOVATE_DRY_RUN=${{ github.event.inputs.logLevel || env.LOG_LEVEL}}" >> $GITHUB_ENV
 
+      - name: generate token
+        run: |
+          echo "$RENOVATE_TOKEN=${{ steps.app-generate.outputs.token }}"
+
       - name: Renovate
         uses: renovatebot/github-action@76d49712364696a06b60e8647df46b288fff0ddc # v40.2.4
         with:
-          configurationFile: "${{ env.RENOVATE_TOKEN }}"
-          token: "${{ steps.app-generate.outputs.token }}"
+          configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
+          token: "${{ env.RENOVATE_TOKEN }}"
