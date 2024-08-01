@@ -1,22 +1,33 @@
----
-name-template: "Release v1.0.0"
-tag-template: "v1.0.0"
-change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
-change-title-escapes: '\<*_&'
+name-template: 'v$RESOLVED_VERSION '
+tag-template: 'v$RESOLVED_VERSION'
 categories:
-  - title: "Cloudflare"
-    labels: ["cloudflare"]
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '🧰 Maintenance'
+    labels:
+      - 'chore'
+      - 'refactor'
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 version-resolver:
   major:
-    labels: ["type/break"]
+    labels:
+      - 'major'
   minor:
-    labels: ["type/major", "type/minor"]
+    labels:
+      - 'minor'
   patch:
-    labels: ["type/patch"]
+    labels:
+      - 'patch'
   default: patch
 template: |
-  ## What's Changed
+  ## Changes
 
   $CHANGES
-
-  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v1.0.0
