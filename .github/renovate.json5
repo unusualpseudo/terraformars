@@ -14,15 +14,9 @@
     "github>unusualpseudo/terraformars//.github/renovate/semanticCommits.json5",
     "github>unusualpseudo/terraformars//.github/renovate/commitMessage.json5"
   ],
-  "platform": "github",
   "commitBodyTable": true,
   "recreateClosed": true,
   "onboarding": false,
-  "username": "unusualpseudo",
-  "gitAuthor": "unusualpseudo <unusualpseudo@users.noreply.github.com>",
-  "repositories": [
-    "unusualpseudo/terraformars"
-  ],
   "timezone": "Europe/Paris",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
