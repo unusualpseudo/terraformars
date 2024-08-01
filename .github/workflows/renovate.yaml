@@ -52,5 +52,5 @@ jobs:
       - name: Renovate
         uses: renovatebot/github-action@76d49712364696a06b60e8647df46b288fff0ddc # v40.2.4
         with:
-          configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
+          configurationFile: "${{ env.RENOVATE_TOKEN }}"
           token: "${{ steps.app-generate.outputs.token }}"
