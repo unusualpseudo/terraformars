@@ -16,7 +16,6 @@
   ],
   "commitBodyTable": true,
   "recreateClosed": true,
-  "onboarding": false,
   "timezone": "Europe/Paris",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard 🤖",
