@@ -1,5 +1,7 @@
 ---
 cloudflare:
-  - "state/cloudflare/*"
+  - changed-files:
+      - any-glob-to-any-file: "state/cloudflare/**/*"
 cicd:
-  - ".github/**/*"
+  - changed-files:
+      - any-glob-to-any-file: ".github/**/*"

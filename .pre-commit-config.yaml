@@ -14,18 +14,8 @@ repos:
           - --tf-init-args=-lockfile=readonly
       - id: terraform_tfsec
         files: ^state/
-        args:
-          - >
-            --format json
       - id: terraform_checkov
         files: ^state/
-
-  - repo: https://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.5.5
-    hooks:
-      - id: forbid-crlf
-      - id: remove-tabs
-      - id: forbid-tabs
 
   - repo: https://github.com/sirosen/texthooks
     rev: 0.6.6
