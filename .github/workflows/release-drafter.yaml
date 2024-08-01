@@ -2,13 +2,20 @@
 name: "Draft Release"
 
 on:
-  workflow_dispatch:
   push:
-    branches: ["main"]
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+permissions:
+  contents: read
 
 jobs:
 
   update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-22.04
     steps:
       - name: Generate token
@@ -21,6 +28,8 @@ jobs:
       - name: Prepare release draft
         uses: release-drafter/release-drafter@3f0f87098bd6b5c5b9a36d49c41d998ea58f9348 # v6.0.0
         with:
+          commitish: main
           config-name: release-drafter.yaml
+          disable-autolabeler: false
         env:
           GITHUB_TOKEN: "${{ steps.generate-token.outputs.token }}"
