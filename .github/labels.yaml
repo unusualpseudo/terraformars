@@ -12,8 +12,6 @@
   color: "ffc300"
 - name: renovate/github-release
   color: "ffc300"
-- name: renovate/helm
-  color: "ffc300"
 - name: renovate/terraform
   color: "ffc300"
 # Semantic Type

@@ -1,5 +1,5 @@
 ---
 cloudflare:
-  - "terraform/cloudflare/*"
+  - "state/cloudflare/*"
 cicd:
   - ".github/**/*"
