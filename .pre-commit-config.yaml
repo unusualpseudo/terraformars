@@ -18,7 +18,7 @@ repos:
         files: ^state/
 
   - repo: https://github.com/sirosen/texthooks
-    rev: 0.6.6
+    rev: 0.6.7
     hooks:
       - id: fix-smartquotes
 
