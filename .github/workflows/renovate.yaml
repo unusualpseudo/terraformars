@@ -56,7 +56,7 @@ jobs:
           echo "$RENOVATE_TOKEN=${{ steps.app-generate.outputs.token }}"
 
       - name: Renovate
-        uses: renovatebot/github-action@76d49712364696a06b60e8647df46b288fff0ddc # v40.2.4
+        uses: renovatebot/github-action@80eaf969abf68ad62aa94d9ab392421b31621634 # v40.3.4
         with:
           configurationFile: "${{ env.RENOVATE_CONFIG_FILE }}"
           token: "${{ env.RENOVATE_TOKEN }}"
