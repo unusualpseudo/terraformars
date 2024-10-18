@@ -43,6 +43,6 @@ repos:
         files: ((^|/)*.sops.(ya?ml)$)
 
   - repo: https://github.com/zricethezav/gitleaks
-    rev: v8.18.4
+    rev: v8.21.1
     hooks:
       - id: gitleaks
