@@ -23,7 +23,7 @@ jobs:
           app_id: "${{ secrets.BOT_APP_ID }}"
           private_key: "${{ secrets.BOT_APP_PRIVATE_KEY }}"
 
-      - uses: terraform-linters/setup-tflint@19a52fbac37dacb22a09518e4ef6ee234f2d4987 # v4
+      - uses: terraform-linters/setup-tflint@ae78205cfffec9e8d93fd2b3115c7e9d3166d4b6 # v5
         name: Setup TFLint
         with:
           github_token: "${{ steps.generate-token.outputs.token }}"
